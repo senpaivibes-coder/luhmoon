@@ -87,54 +87,55 @@ tasks:
     ref: main
     dest: resources/[database]/oxmysql
 
-###############################################
-# WORLD SETTINGS (WANTED LEVEL, DISPATCH, DENSITY)
-###############################################
-- action: create_dir
-  path: resources/[custom]/world
+  # ---------------------------------------------
+  # WORLD SETTINGS
+  # ---------------------------------------------
+  - action: create_dir
+    path: resources/[custom]/world
 
-- action: write_file
-  path: resources/[custom]/world/fxmanifest.lua
-  data: |
-    fx_version 'cerulean'
-    game 'gta5'
+  - action: write_file
+    path: resources/[custom]/world/fxmanifest.lua
+    data: |
+      fx_version 'cerulean'
+      game 'gta5'
 
-    client_scripts {
-        'client.lua'
-    }
+      client_scripts {
+          'client.lua'
+      }
 
-- action: write_file
-  path: resources/[custom]/world/client.lua
-  data: |
-    -- Restore Wanted Level
-    CreateThread(function()
-        while true do
-            Wait(0)
-            SetMaxWantedLevel(5)
-            local lvl = GetPlayerWantedLevel(PlayerId())
-            SetPlayerWantedLevel(PlayerId(), lvl, false)
-            SetPlayerWantedLevelNow(PlayerId(), false)
-        end
-    end)
+  - action: write_file
+    path: resources/[custom]/world/client.lua
+    data: |
+      -- Restore Wanted Level
+      CreateThread(function()
+          while true do
+              Wait(0)
+              SetMaxWantedLevel(5)
+              local lvl = GetPlayerWantedLevel(PlayerId())
+              SetPlayerWantedLevel(PlayerId(), lvl, false)
+              SetPlayerWantedLevelNow(PlayerId(), false)
+          end
+      end)
 
-    -- Enable Dispatch Services
-    CreateThread(function()
-        for i = 1, 15 do
-            EnableDispatchService(i, true)
-        end
-    end)
+      -- Enable Dispatch Services
+      CreateThread(function()
+          for i = 1, 15 do
+              EnableDispatchService(i, true)
+          end
+      end)
 
-    -- Restore Story Mode Ped & Traffic Density
-    CreateThread(function()
-        while true do
-            Wait(0)
-            SetPedDensityMultiplierThisFrame(1.0)
-            SetScenarioPedDensityMultiplierThisFrame(1.0, 1.0)
-            SetVehicleDensityMultiplierThisFrame(1.0)
-            SetRandomVehicleDensityMultiplierThisFrame(1.0)
-            SetParkedVehicleDensityMultiplierThisFrame(1.0)
-        end
-    end)
+      -- Restore Story Mode Ped & Traffic Density
+      CreateThread(function()
+          while true do
+              Wait(0)
+              SetPedDensityMultiplierThisFrame(1.0)
+              SetScenarioPedDensityMultiplierThisFrame(1.0, 1.0)
+              SetVehicleDensityMultiplierThisFrame(1.0)
+              SetRandomVehicleDensityMultiplierThisFrame(1.0)
+              SetParkedVehicleDensityMultiplierThisFrame(1.0)
+          end
+      end)
+
 
   # ---------------------------------------------
   # SERVER.CFG
