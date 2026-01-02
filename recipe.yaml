@@ -1,0 +1,191 @@
+name: "ESX Legacy Full Build by Dre"
+version: "1.0.0"
+author: "Dre"
+
+tasks:
+  # ---------------------------------------------
+  # ESX LEGACY (LATEST VERSION)
+  # ---------------------------------------------
+  - action: download_github
+    src: https://github.com/esx-framework/esx-legacy
+    ref: main
+    dest: resources/[esx]/es_extended
+
+  - action: download_github
+    src: https://github.com/esx-framework/esx_addonaccount
+    ref: main
+    dest: resources/[esx]/esx_addonaccount
+
+  - action: download_github
+    src: https://github.com/esx-framework/esx_addoninventory
+    ref: main
+    dest: resources/[esx]/esx_addoninventory
+
+  - action: download_github
+    src: https://github.com/esx-framework/esx_datastore
+    ref: main
+    dest: resources/[esx]/esx_datastore
+
+  - action: download_github
+    src: https://github.com/esx-framework/esx_society
+    ref: main
+    dest: resources/[esx]/esx_society
+
+  # ---------------------------------------------
+  # ESX JOBS PACK
+  # ---------------------------------------------
+  - action: download_github
+    src: https://github.com/esx-framework/esx_policejob
+    ref: main
+    dest: resources/[esx_jobs]/esx_policejob
+
+  - action: download_github
+    src: https://github.com/esx-framework/esx_ambulancejob
+    ref: main
+    dest: resources/[esx_jobs]/esx_ambulancejob
+
+  - action: download_github
+    src: https://github.com/esx-framework/esx_mechanicjob
+    ref: main
+    dest: resources/[esx_jobs]/esx_mechanicjob
+
+  - action: download_github
+    src: https://github.com/esx-framework/esx_realestateagentjob
+    ref: main
+    dest: resources/[esx_jobs]/esx_realestateagentjob
+
+  - action: download_github
+    src: https://github.com/esx-framework/esx_taxijob
+    ref: main
+    dest: resources/[esx_jobs]/esx_taxijob
+
+  - action: download_github
+    src: https://github.com/esx-framework/esx_vehicleshop
+    ref: main
+    dest: resources/[esx_jobs]/esx_vehicleshop
+
+  # ---------------------------------------------
+  # OX FRAMEWORK RESOURCES
+  # ---------------------------------------------
+  - action: download_github
+    src: https://github.com/overextended/ox_lib
+    ref: main
+    dest: resources/[ox]/ox_lib
+
+  - action: download_github
+    src: https://github.com/overextended/ox_inventory
+    ref: main
+    dest: resources/[ox]/ox_inventory
+
+  - action: download_github
+    src: https://github.com/overextended/ox_target
+    ref: main
+    dest: resources/[ox]/ox_target
+
+  - action: download_github
+    src: https://github.com/overextended/oxmysql
+    ref: main
+    dest: resources/[database]/oxmysql
+
+  # ---------------------------------------------
+  # WORLD SETTINGS
+  # ---------------------------------------------
+  - action: write_file
+    path: resources/[custom]/world/client.lua
+    data: |
+      -- Restore Wanted Level
+      CreateThread(function()
+          while true do
+              Wait(0)
+              SetMaxWantedLevel(5)
+              local lvl = GetPlayerWantedLevel(PlayerId())
+              SetPlayerWantedLevel(PlayerId(), lvl, false)
+              SetPlayerWantedLevelNow(PlayerId(), false)
+          end
+      end)
+
+      -- Enable Dispatch Services
+      CreateThread(function()
+          for i = 1, 15 do
+              EnableDispatchService(i, true)
+          end
+      end)
+
+      -- Restore Story Mode Ped & Traffic Density
+      CreateThread(function()
+          while true do
+              Wait(0)
+              SetPedDensityMultiplierThisFrame(1.0)
+              SetScenarioPedDensityMultiplierThisFrame(1.0, 1.0)
+              SetVehicleDensityMultiplierThisFrame(1.0)
+              SetRandomVehicleDensityMultiplierThisFrame(1.0)
+              SetParkedVehicleDensityMultiplierThisFrame(1.0)
+          end
+      end)
+
+  # ---------------------------------------------
+  # SERVER.CFG
+  # ---------------------------------------------
+  - action: write_file
+    path: server.cfg
+    data: |
+      sv_hostname "Dre ESX Legacy | ox_inventory | Full Jobs | Story Mode World"
+      sv_maxclients 64
+
+      # Database
+      set mysql_connection_string "mysql://root:password@localhost/esx?charset=utf8mb4"
+
+      # OX Core
+      ensure oxmysql
+      ensure ox_lib
+      ensure ox_inventory
+      ensure ox_target
+
+      # ESX Framework
+      ensure es_extended
+      ensure esx_addonaccount
+      ensure esx_addoninventory
+      ensure esx_datastore
+      ensure esx_society
+
+      # ESX Jobs
+      ensure esx_policejob
+      ensure esx_ambulancejob
+      ensure esx_mechanicjob
+      ensure esx_realestateagentjob
+      ensure esx_taxijob
+      ensure esx_vehicleshop
+
+      # World Systems
+      ensure world
+
+      # Inventory Integration
+      setr inventory:framework "esx"
+      setr inventory:weight_system true
+
+      # Ox Target
+      setr ox_target:debug false
+
+      # Basic Resources
+      ensure chat
+      ensure spawnmanager
+      ensure sessionmanager
+      ensure hardcap
+
+      # Permissions
+      add_ace group.admin command allow
+      add_principal identifier.fivem:YOURID group.admin
+
+      # Game Build
+      sv_scriptHookAllowed 0
+      sv_endpointPrivacy true
+      sv_enforceGameBuild 3095
+
+  # ---------------------------------------------
+  # SQL IMPORTS
+  # ---------------------------------------------
+  - action: run_sql
+    file: resources/[ox]/ox_inventory/sql/items.sql
+
+  - action: run_sql
+    file: resources/[esx]/es_extended/sql/es_extended.sql
